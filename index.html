@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #calculator {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      max-width: 300px;
+      margin: auto;
+    }
+
+    #result {
+      grid-column: span 4;
+      text-align: right;
+      padding: 10px;
+      font-size: 1.5em;
+      background-color: #f4f4f4;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 1em;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+
+    button:active {
+      background-color: #e6e6e6;
+    }
+
+    button.operator {
+      background-color: #ff9c00;
+      color: #fff;
+    }
+
+    button.double {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 400px) {
+      #calculator {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+  <title>Simple Calculator</title>
+</head>
+<body>
+  <div id="calculator">
+    <div id="result">0</div>
+    <button>7</button>
+    <button>8</button>
+    <button>9</button>
+    <button class="operator">/</button>
+    <button>4</button>
+    <button>5</button>
+    <button>6</button>
+    <button class="operator">*</button>
+    <button>1</button>
+    <button>2</button>
+    <button>3</button>
+    <button class="operator">-</button>
+    <button class="double">00</button>
+    <button>0</button>
+    <button class="operator">=</button>
+    <button class="operator">+</button>
+    <button>%</button>
+    <button class="double operator">Clear</button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const resultElement = document.getElementById('result');
+      const buttons = document.querySelectorAll('button');
+
+      let currentInput = '';
+      let currentOperator = null;
+      let previousInput = '';
+
+      buttons.forEach(button => {
+        button.addEventListener('click', () => handleButtonClick(button.innerText));
+      });
+
+      function handleButtonClick(value) {
+        if (!isNaN(parseInt(value)) || value === '.') {
+          currentInput += value;
+        } else if (value === 'C') {
+          clearCalculator();
+        } else if (value === '=') {
+          performCalculation();
+        } else if (value === '%') {
+          calculatePercentage();
+        } else {
+          handleOperator(value);
+        }
+
+        updateResult();
+      }
+
+      function handleOperator(operator) {
+        if (currentOperator !== null) {
+          performCalculation();
+        }
+        currentOperator = operator;
+        previousInput = currentInput;
+        currentInput = '';
+      }
+
+      function performCalculation() {
+        if (currentOperator === null || previousInput === '') return;
+
+        const previous = parseFloat(previousInput);
+        const current = parseFloat(currentInput);
+
+        switch (currentOperator) {
+          case '+':
+            currentInput = previous + current;
+            break;
+          case '-':
+            currentInput = previous - current;
+            break;
+          case '*':
+            currentInput = previous * current;
+            break;
+          case '/':
+            currentInput = previous / current;
+            break;
+          default:
+            return;
+        }
+
+        currentOperator = null;
+        previousInput = '';
+      }
+
+      function calculatePercentage() {
+        if (currentInput !== '') {
+          currentInput = parseFloat(currentInput) / 100;
+        }
+      }
+
+      function clearCalculator() {
+        currentInput = '';
+        currentOperator = null;
+        previousInput = '';
+      }
+
+      function updateResult() {
+        resultElement.innerText = currentInput || '0';
+      }
+    });
+  </script>
+</body>
+</html>
